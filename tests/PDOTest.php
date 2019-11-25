@@ -20,12 +20,18 @@ class PDOTestCase extends \PHPUnit\Framework\TestCase {
 
 	public function testExecute() {
 		$db = new PDO($this->dsn);
-		$val = $db->execute("SELECT :val", ["val"=>42])->fetch()[0];
-		$this->assertEquals(42, $val);
+		$db->execute("DROP TABLE IF EXISTS test");
+		$db->execute("CREATE TABLE test (id INTEGER, value TEXT)");
+		$db->execute("INSERT INTO test VALUES (1, 'hello')");
+		$db->execute("INSERT INTO test VALUES (2, 'world')");
+
+		$val = $db->execute("SELECT * FROM test WHERE id=:id", ["id"=>2])->fetch()['value'];
+		$this->assertEquals("world", $val);
 	}
 
 	public function testBindingInt() {
 		$db = new PDO($this->dsn);
+		$db->execute("DROP TABLE IF EXISTS test");
 		$db->execute("CREATE TABLE test (id INTEGER, value TEXT)");
 		$db->execute("INSERT INTO test VALUES (1, 'hello')");
 		$db->execute("INSERT INTO test VALUES (2, 'world')");
