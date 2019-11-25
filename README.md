@@ -7,7 +7,7 @@ as years ago...
 Features
 --------
 
-*PDO*:
+**PDO**:
 
 Example use:
 ```
@@ -20,7 +20,7 @@ var_dump($db->execute("SELECT * FROM mytable LIMIT :limit", ["limit"=>3])->fetch
   password as part of the DSN, just like every other backend.
 
 - Added `PDO::execute($query, $parameters)`, so that one can write a
-  templated query without needing to create a one-use prepared statement
+  templated query without needing to create a single-use prepared statement
 
 - Made `PDOStatement::execute($parameters)` use typed bindings, so that
-  `"LIMIT :foo", ["foo"=>3]` is rendered as "LIMIT 3" instead of "LIMIT '3'"
+  `"LIMIT :foo", ["foo"=>3]` is rendered as `LIMIT 3` instead of `LIMIT '3'`
