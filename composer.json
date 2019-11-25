@@ -1,0 +1,27 @@
+{
+    "name": "shish/ffsphp",
+    "type": "library",
+    "description": "A collection of workarounds for stupid PHP things",
+    "keywords": [],
+    "homepage": "https://github.com/shish/ffsphp",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shish",
+            "email": "webmaster@shishnet.org",
+            "homepage": "http://shishnet.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "8.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "FFSPHP\\": "src"
+        }
+    }
+}
