@@ -4,7 +4,7 @@ require "vendor/autoload.php";
 
 use FFSPHP\PDO;
 
-class PDOTestCase extends \PHPUnit\Framework\TestCase {
+class PDOTest extends \PHPUnit\Framework\TestCase {
 	var $dsn;
 
 	public function setUp(): void {
