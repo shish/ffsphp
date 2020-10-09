@@ -38,6 +38,9 @@ jobs:
             mysql -e "SET GLOBAL general_log = 'ON';" -uroot -proot ;
             mysql -e "CREATE DATABASE test;" -uroot -proot ;
         fi
+        if [[ "${{ matrix.database }}" == "sqlite" ]]; then
+            sqlite3 --version ;
+        fi
 
     - name: Check Versions
       run: php -v && composer -V
