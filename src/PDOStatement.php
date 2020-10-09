@@ -17,8 +17,10 @@ class PDOStatement extends \PDOStatement {
 	public function execute($input_parameters = null) {
 		if($input_parameters) {
 			foreach($input_parameters as $name => $value) {
-				if (is_int($value)) {
-					$this->bindValue(':'.$name, $value, PDO::PARAM_INT);
+                if (is_bool($value)) {
+                    $this->bindValue(':'.$name, $value, PDO::PARAM_BOOL);
+                } elseif (is_int($value)) {
+                    $this->bindValue(':'.$name, $value, PDO::PARAM_INT);
 				} else {
 					$this->bindValue(':'.$name, $value, PDO::PARAM_STR);
 				}
