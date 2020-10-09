@@ -53,14 +53,14 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run test suite
-      # Under 18.04, sqlite is too old to support the named
+      # SQLite is broken under 18.04, too old to support the named
       # constants "true" and "false" (it has 3.22, need 3.23)
-      # Under 20.04, mysql is too new to support PHP's legacy
-      # authentication code.
+      # MySQL + PHP7.3 is broken under 20.04, mysql only allows
+      # sha2 auth and php only supports the old method
       if: |
         !(
           (matrix.database == 'sqlite' && matrix.host == 'ubuntu-18.04' ) ||
-          (matrix.database == 'mysql' && matrix.host == 'ubuntu-20.04')
+          (matrix.database == 'mysql' && matrix.host == 'ubuntu-20.04' && matrix.php == '7.3')
         )
       run: |
         if [[ "${{ matrix.database }}" == "pgsql" ]]; then
