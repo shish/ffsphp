@@ -23,6 +23,7 @@ class PDO extends \PDO
 
         parent::__construct($dsn, $user, $pass, $options);
 
+        $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $this->setAttribute(\PDO::ATTR_STATEMENT_CLASS, ['\FFSPHP\PDOStatement', [&$this]]);
     }
 
