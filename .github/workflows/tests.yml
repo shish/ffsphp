@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: PHP ${{ matrix.php }} / DB ${{ matrix.database }} / OS ${{ matrix.host }}
+    name: php${{ matrix.php }} / ${{ matrix.database }} / ${{ matrix.host }}
     strategy:
       fail-fast: false
       matrix:
