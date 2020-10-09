@@ -4,14 +4,15 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: PHP ${{ matrix.php }} / DB ${{ matrix.database }}
+    name: PHP ${{ matrix.php }} / DB ${{ matrix.database }} / OS ${{ matrix.host }}
     strategy:
       fail-fast: false
       matrix:
         php: ['7.3', '7.4']
         database: ['pgsql', 'mysql', 'sqlite']
+        host: ['ubuntu-18.04', 'ubuntu-20.04']
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.host }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -52,6 +53,15 @@ jobs:
       run: composer install --prefer-dist --no-progress --no-suggest
 
     - name: Run test suite
+      # Under 18.04, sqlite is too old to support the named
+      # constants "true" and "false" (it has 3.22, need 3.23)
+      # Under 20.04, mysql is too new to support PHP's legacy
+      # authentication code.
+      if: |
+        !(
+          (matrix.database == 'sqlite' && matrix.host == 'ubuntu-18.04' ) ||
+          (matrix.database == 'mysql' && matrix.host == 'ubuntu-20.04')
+        )
       run: |
         if [[ "${{ matrix.database }}" == "pgsql" ]]; then
             export DSN="pgsql:user=root;password=root;host=127.0.0.1;dbname=test"
