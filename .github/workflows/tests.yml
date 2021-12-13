@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.3', '7.4', '8.0', '8.1', '8.2']
+        php: ['7.3', '7.4', '8.0', '8.1']
         database: ['pgsql', 'mysql', 'sqlite']
         host: ['ubuntu-18.04', 'ubuntu-20.04']
 
@@ -59,7 +59,7 @@ jobs:
       # sha2 auth and php only supports the old method
       if: |
         !(
-          (matrix.database == 'sqlite' && matrix.host == 'ubuntu-18.04' ) ||
+          (matrix.database == 'sqlite' && matrix.host == 'ubuntu-18.04') ||
           (matrix.database == 'mysql' && matrix.host == 'ubuntu-20.04' && matrix.php == '7.3')
         )
       run: |
