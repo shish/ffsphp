@@ -16,7 +16,7 @@ class PDOStatement extends \PDOStatement
      * as integers, so "LIMIT :foo" [foo=3] turns into "LIMIT 3"
      * instead of "LIMIT '3'"
      */
-    public function execute($input_parameters = null)
+    public function execute($input_parameters = null): bool
     {
         if ($input_parameters) {
             foreach ($input_parameters as $name => $value) {
@@ -29,6 +29,6 @@ class PDOStatement extends \PDOStatement
                 }
             }
         }
-        parent::execute();
+        return parent::execute();
     }
 }
