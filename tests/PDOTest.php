@@ -5,8 +5,10 @@ declare(strict_types=1);
 require "vendor/autoload.php";
 
 use FFSPHP\PDO;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Depends;
 
-class PDOTest extends \PHPUnit\Framework\TestCase
+class PDOTest extends TestCase
 {
     public $dsn;
 
@@ -35,9 +37,7 @@ class PDOTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @depends testConstructor
-     */
+    #[Depends("testConstructor")]
     public function testBools(PDO $db)
     {
         $db->execute("DROP TABLE IF EXISTS bools");
@@ -54,9 +54,7 @@ class PDOTest extends \PHPUnit\Framework\TestCase
         return $db;
     }
 
-    /**
-     * @depends testConstructor
-     */
+    #[Depends("testConstructor")]
     public function testBaseData(PDO $db)
     {
         $db->execute("DROP TABLE IF EXISTS test");
@@ -74,18 +72,14 @@ class PDOTest extends \PHPUnit\Framework\TestCase
         return $db;
     }
 
-    /**
-     * @depends testBaseData
-     */
+    #[Depends("testBaseData")]
     public function testExecute(PDO $db)
     {
         $val = $db->execute("SELECT * FROM test WHERE id=:id", ["id" => 2])->fetch();
         $this->assertEquals("world", $val['textval']);
     }
 
-    /**
-     * @depends testBaseData
-     */
+    #[Depends("testBaseData")]
     public function testBindingMetaInt(PDO $db)
     {
         // By default, mysql would bind this as the string '1' and then
@@ -94,27 +88,21 @@ class PDOTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $res);
     }
 
-    /**
-     * @depends testBaseData
-     */
+    #[Depends("testBaseData")]
     public function testBindingInt(PDO $db)
     {
         $res = $db->execute("SELECT * FROM test WHERE id=:id", ["id" => 2])->fetch();
         $this->assertEquals("world", $res['textval']);
     }
 
-    /**
-     * @depends testBaseData
-     */
+    #[Depends("testBaseData")]
     public function testBindingStr(PDO $db)
     {
         $res = $db->execute("SELECT * FROM test WHERE textval=:textval", ["textval" => "hello"])->fetch();
         $this->assertEquals(1, $res['id']);
     }
 
-    /**
-     * @depends testBaseData
-     */
+    #[Depends("testBaseData")]
     public function testBindingBool(PDO $db)
     {
         $res = $db->execute("SELECT * FROM test WHERE boolval=:boolval", ["boolval" => true])->fetch();
@@ -133,9 +121,7 @@ class PDOTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $actual, $raw);
     }
 
-    /**
-     * @depends testConstructor
-     */
+    #[Depends("testConstructor")]
     public function testTypes(PDO $db)
     {
         $db->execute("DROP TABLE IF EXISTS frn");
