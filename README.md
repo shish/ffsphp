@@ -33,3 +33,12 @@ use \FFSPHP\Paths;
 Paths::abspath("./foo");  # /my/dir/foo
 Paths::relative_path("out/output.txt", "my/dir/input.txt");  # ../../out/output.txt
 ```
+
+**VLQ**:
+
+```
+use \FFSPHP\VLQ;
+
+VLQ::decode_vlq_array("IAAM");  # [4,0,0,6]
+VLQ::encode_vlq_array([4,0,0,6]);  # "IAAM"
+```
