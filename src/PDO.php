@@ -11,8 +11,10 @@ class PDO extends \PDO
      *
      * Why? Becuase while most PDO backends accept username and password inside
      * the DSN, the MySQL backend requires them to be passed separately...
+     *
+     * @param mixed[] $options
      */
-    public function __construct($dsn, $options = null)
+    public function __construct(string $dsn, ?array $options = null)
     {
         $user = null;
         $pass = null;
@@ -26,26 +28,35 @@ class PDO extends \PDO
         parent::__construct($dsn, $user, $pass, $options);
 
         $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->setAttribute(\PDO::ATTR_STATEMENT_CLASS, ['\FFSPHP\PDOStatement', [&$this]]);
+        $this->setAttribute(\PDO::ATTR_STATEMENT_CLASS, [PDOStatement::class, [&$this]]);
     }
 
     /**
      * Like exec() except it also accepts parameters, saving the user from
      * needing to create a prepared statement for a one-off query
+     *
+     * @param mixed[]|null $parameters
      */
-    public function execute($query, $parameters = null)
+    public function execute(string $query, array $parameters = null): PDOStatement
     {
+        /** @var PDOStatement|false */
         $stmt = $this->prepare($query);
+        if(!$stmt) {
+            throw new \Exception("Failed to prepare query: $query");
+        }
         $stmt->execute($parameters);
         return $stmt;
     }
 
-    private function describeSqlite($table)
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function describeSqlite(string $table): array
     {
         $cols = [];
         $stmt = $this->execute("PRAGMA table_info($table)");
         foreach ($stmt->fetchAll() as $col) {
-            $cols[$col['name']] = [
+            $cols[(string)$col['name']] = [
                 'type' => $col['type'],
                 'not_null' => $col['notnull'] == 1,
                 'default' => $col['dflt_value'],
@@ -56,7 +67,10 @@ class PDO extends \PDO
         return $cols;
     }
 
-    private function describeMysql($table)
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function describeMysql(string $table): array
     {
         $cols = [];
         $stmt = $this->execute("DESCRIBE $table");
@@ -66,7 +80,7 @@ class PDO extends \PDO
             $type = $type == "INT" ? "INTEGER" : $type;
             $type = $type == "TINYINT(1)" ? "BOOLEAN" : $type;
             $def = $type == "BOOLEAN" ? ($def == "0" ? "FALSE" : "TRUE") : $def;
-            $cols[$col['Field']] = [
+            $cols[(string)$col['Field']] = [
                 "type" => $type,
                 "not_null" => $col['Null'] == "NO",
                 "default" => $def,
@@ -76,7 +90,10 @@ class PDO extends \PDO
         return $cols;
     }
 
-    private function describePgsql($table)
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function describePgsql(string $table): array
     {
         $cols = [];
         $stmt = $this->execute("SELECT * FROM information_schema.columns WHERE table_name = :t", ["t" => $table]);
@@ -88,7 +105,7 @@ class PDO extends \PDO
             }
             $type = $type == "DOUBLE PRECISION" ? "FLOAT" : $type;
             $def = $type == "BOOLEAN" ? strtoupper($def) : $def;
-            $cols[$col['column_name']] = [
+            $cols[(string)$col['column_name']] = [
                 "type" => $type,
                 "not_null" => $col['is_nullable'] == "NO",
                 "default" => $def,
@@ -98,7 +115,12 @@ class PDO extends \PDO
         return $cols;
     }
 
-    public function describe($table)
+    /**
+     * Returns an array describing the columns of a table
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function describe(string $table): array
     {
         $driver = $this->getAttribute(PDO::ATTR_DRIVER_NAME);
         return match ($driver) {

@@ -6,7 +6,7 @@ namespace FFSPHP;
 
 class VLQ
 {
-    public static function encode_vlq(int $value)
+    public static function encode_vlq(int $value): string
     {
         $res = "";
         $vlq = ($value < 0) ? ((-$value) << 1) + 1 : ($value << 1) + 0;
@@ -21,7 +21,10 @@ class VLQ
         return $res;
     }
 
-    public static function encode_vlq_array(array $values)
+    /**
+     * @param int[] $values
+     */
+    public static function encode_vlq_array(array $values): string
     {
         $res = "";
         foreach ($values as $value) {
@@ -30,7 +33,7 @@ class VLQ
         return $res;
     }
 
-    public static function decode_vlq(string $vlq)
+    public static function decode_vlq(string $vlq): int
     {
         $res = 0;
         $shift = 0;
@@ -45,7 +48,10 @@ class VLQ
         return ($res & 1) ? -($res >> 1) : ($res >> 1);
     }
 
-    public static function decode_vlq_array(string $vlq)
+    /**
+     * @return int[]
+     */
+    public static function decode_vlq_array(string $vlq): array
     {
         $res = [];
         $shift = 0;

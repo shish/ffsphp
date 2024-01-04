@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\Depends;
 
 class PathsTest extends TestCase
 {
-    public function test_abspath()
+    public function test_abspath(): void
     {
         $this->assertEquals("/foo/bar", Paths::abspath("/foo/bar", cwd: "/foo"));
         $this->assertEquals("/foo/bar", Paths::abspath("bar", cwd: "/foo"));
@@ -21,7 +21,7 @@ class PathsTest extends TestCase
     }
 
     #[Depends("test_abspath")]
-    public function test_relative_path()
+    public function test_relative_path(): void
     {
         // same dir
         $this->assertEquals("foo.css", Paths::relative_path("foo.css", "bar.css"));

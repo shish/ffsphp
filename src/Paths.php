@@ -6,9 +6,10 @@ namespace FFSPHP;
 
 class Paths
 {
-    public static function abspath(string $path, ?string $cwd = null)
+    public static function abspath(string $path, ?string $cwd = null): string
     {
         $cwd = $cwd ?? getcwd();
+        assert($cwd, "cwd must be set");
         assert($cwd[0] == "/", "cwd must be absolute");
         if($path[0] != "/") {
             $path = "$cwd/$path";
@@ -25,7 +26,7 @@ class Paths
         return implode("/", $res);
     }
 
-    public static function relative_path(string $path, string $reference, ?string $cwd = null)
+    public static function relative_path(string $path, string $reference, ?string $cwd = null): string
     {
         $path = self::abspath($path, $cwd);
         $reference = self::abspath($reference, $cwd);
