@@ -28,6 +28,8 @@ class PDOStatement extends \PDOStatement
                     $this->bindValue(':'.$name, $value, PDO::PARAM_BOOL);
                 } elseif (is_int($value)) {
                     $this->bindValue(':'.$name, $value, PDO::PARAM_INT);
+                } elseif (is_array($value)) {
+                    throw new \PDOException("Arrays are not supported as bind values (Trying to bind $name)");
                 } else {
                     $this->bindValue(':'.$name, $value, PDO::PARAM_STR);
                 }
