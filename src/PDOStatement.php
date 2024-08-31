@@ -20,7 +20,7 @@ class PDOStatement extends \PDOStatement
      *
      * @param mixed[]|null $input_parameters
      */
-    public function execute(array $input_parameters = null): bool
+    public function execute(?array $input_parameters = null): bool
     {
         if ($input_parameters) {
             foreach ($input_parameters as $name => $value) {

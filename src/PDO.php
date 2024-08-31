@@ -37,7 +37,7 @@ class PDO extends \PDO
      *
      * @param mixed[]|null $parameters
      */
-    public function execute(string $query, array $parameters = null): PDOStatement
+    public function execute(string $query, ?array $parameters = null): PDOStatement
     {
         /** @var PDOStatement|false */
         $stmt = $this->prepare($query);
