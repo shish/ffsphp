@@ -130,7 +130,7 @@ class PDOTest extends TestCase
     private function _checkDescribe(array $expected, array $actual): void
     {
         $raw = "";
-        if(isset($actual['raw'])) {
+        if (isset($actual['raw'])) {
             $raw = var_export($actual['raw'], true);
             unset($actual['raw']);
         }

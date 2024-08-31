@@ -11,7 +11,7 @@ class Paths
         $cwd = $cwd ?? getcwd();
         assert($cwd, "cwd must be set");
         assert($cwd[0] == "/", "cwd must be absolute");
-        if($path[0] != "/") {
+        if ($path[0] != "/") {
             $path = "$cwd/$path";
         }
         $parts = explode("/", $path);

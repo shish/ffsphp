@@ -41,7 +41,7 @@ class PDO extends \PDO
     {
         /** @var PDOStatement|false */
         $stmt = $this->prepare($query);
-        if(!$stmt) {
+        if (!$stmt) {
             throw new \Exception("Failed to prepare query: $query");
         }
         $stmt->execute($parameters);
