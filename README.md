@@ -24,3 +24,21 @@ var_dump($db->execute("SELECT * FROM mytable LIMIT :limit", ["limit"=>3])->fetch
 
 - Made `PDOStatement::execute($parameters)` use typed bindings, so that
   `"LIMIT :foo", ["foo"=>3]` is rendered as `LIMIT 3` instead of `LIMIT '3'`
+
+**Paths**:
+
+```
+use \FFSPHP\Paths;
+
+Paths::abspath("./foo");  # /my/dir/foo
+Paths::relative_path("out/output.txt", "my/dir/input.txt");  # ../../out/output.txt
+```
+
+**VLQ**:
+
+```
+use \FFSPHP\VLQ;
+
+VLQ::decode_vlq_array("IAAM");  # [4,0,0,6]
+VLQ::encode_vlq_array([4,0,0,6]);  # "IAAM"
+```
