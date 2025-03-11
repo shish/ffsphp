@@ -22,19 +22,14 @@ class PDOTest extends TestCase
     public function testConstructor(): PDO
     {
         $db = new PDO($this->dsn);
-        $this->assertNotNull($db);
+        $this->assertEquals($db->getAttribute(\PDO::ATTR_ERRMODE), \PDO::ERRMODE_EXCEPTION);
         return $db;
     }
 
     public function testConstructorWithAuth(): void
     {
-        try {
-            new PDO("test:user=foo;password=bar");
-            $this->assertTrue(false);
-        } catch (\PDOException $e) {
-            // "can't find driver" is expected
-            $this->assertTrue(true);
-        }
+        $this->expectException(\PDOException::class);
+        new PDO("test:user=foo;password=bar");
     }
 
     #[Depends("testConstructor")]
@@ -67,16 +62,17 @@ class PDOTest extends TestCase
             "INSERT INTO test VALUES (:id, :text, :bool)",
             ["id" => 2, "text" => "world", "bool" => false]
         );
-        // var_dump($db->execute("SELECT * FROM test")->fetchAll());
-        $this->assertTrue(true);
+        $data = $db->execute("SELECT * FROM test")->fetchAll();
+        $this->assertEquals($data[0]['id'], 1);
         return $db;
     }
 
     #[Depends("testBaseData")]
     public function testExecute(PDO $db): void
     {
-        $val = $db->execute("SELECT * FROM test WHERE id=:id", ["id" => 2])->fetch();
-        $this->assertEquals("world", $val['textval']);
+        /** @var array<string, mixed> $res */
+        $res = $db->execute("SELECT * FROM test WHERE id=:id", ["id" => 2])->fetch();
+        $this->assertEquals("world", $res['textval']);
     }
 
     #[Depends("testBaseData")]
@@ -91,6 +87,7 @@ class PDOTest extends TestCase
     #[Depends("testBaseData")]
     public function testBindingInt(PDO $db): void
     {
+        /** @var array<string, mixed> $res */
         $res = $db->execute("SELECT * FROM test WHERE id=:id", ["id" => 2])->fetch();
         $this->assertEquals("world", $res['textval']);
     }
@@ -98,6 +95,7 @@ class PDOTest extends TestCase
     #[Depends("testBaseData")]
     public function testBindingStr(PDO $db): void
     {
+        /** @var array<string, mixed> $res */
         $res = $db->execute("SELECT * FROM test WHERE textval=:textval", ["textval" => "hello"])->fetch();
         $this->assertEquals(1, $res['id']);
     }
@@ -105,8 +103,10 @@ class PDOTest extends TestCase
     #[Depends("testBaseData")]
     public function testBindingBool(PDO $db): void
     {
+        /** @var array<string, mixed> $res */
         $res = $db->execute("SELECT * FROM test WHERE boolval=:boolval", ["boolval" => true])->fetch();
         $this->assertEquals(1, $res['id']);
+        /** @var array<string, mixed> $res */
         $res = $db->execute("SELECT * FROM test WHERE boolval=:boolval", ["boolval" => false])->fetch();
         $this->assertEquals(2, $res['id']);
     }
