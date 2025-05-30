@@ -16,7 +16,7 @@ class PDOTest extends TestCase
     {
         parent::setUp();
         //$this->dsn = getenv('DSN') ? getenv('DSN') : "sqlite::memory:";
-        $this->dsn = getenv('DSN') ? getenv('DSN') : "sqlite:test.sqlite";
+        $this->dsn = getenv('DSN') ?: "sqlite:test.sqlite";
     }
 
     public function testConstructor(): PDO
