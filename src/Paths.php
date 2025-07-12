@@ -6,12 +6,24 @@ namespace FFSPHP;
 
 class Paths
 {
+    public static function is_absolute(string $path): bool
+    {
+        // Check if the path starts with a slash (Unix-like systems)
+        // or a drive letter followed by a colon and a slash (Windows)
+        return $path !== "" && ($path[0] === '/' || (preg_match('/^[a-zA-Z]:\//', $path) === 1));
+    }
+
     public static function abspath(string $path, ?string $cwd = null): string
     {
         $cwd = $cwd ?? getcwd();
-        assert($cwd, "cwd must be set");
-        assert($cwd[0] == "/", "cwd must be absolute");
-        if ($path[0] != "/") {
+        if ($cwd === false) {
+            throw new \RuntimeException("Current working directory could not be determined.");
+        }
+        if (!self::is_absolute($cwd)) {
+            throw new \InvalidArgumentException("Current working directory must be an absolute path.");
+        }
+
+        if (!self::is_absolute($path)) {
             $path = "$cwd/$path";
         }
         $parts = explode("/", $path);
@@ -42,7 +54,10 @@ class Paths
         $reference_parts = array_slice($reference_parts, 0, count($reference_parts) - 1);
 
         $common = 0;
-        while ($common < count($path_parts) && $common < count($reference_parts) && $path_parts[$common] == $reference_parts[$common]) {
+        while (
+            $common < min(count($path_parts), count($reference_parts))
+            && $path_parts[$common] == $reference_parts[$common]
+        ) {
             $common++;
         }
         $res = [];
