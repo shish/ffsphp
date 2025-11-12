@@ -19,6 +19,12 @@ class PDOTest extends TestCase
         $this->dsn = getenv('DSN') ?: "sqlite:test.sqlite";
     }
 
+    public function testBadDriver(): void
+    {
+        $this->expectException(\PDOException::class);
+        new PDO("nonexistentdriver:dbname=testdb");
+    }
+
     public function testConstructor(): PDO
     {
         $db = new PDO($this->dsn);
