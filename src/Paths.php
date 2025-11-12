@@ -20,7 +20,7 @@ class Paths
             throw new \RuntimeException("Current working directory could not be determined.");
         }
         if (!self::is_absolute($cwd)) {
-            throw new \InvalidArgumentException("Current working directory must be an absolute path.");
+            throw new \InvalidArgumentException("Current working directory ($cwd) must be an absolute path.");
         }
 
         if (!self::is_absolute($path)) {
