@@ -20,16 +20,16 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: vendor
-          key: vendor-${{ hashFiles('composer.json') }}
-      - uses: php-actions/composer@v6
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: pcov
           extensions: mbstring, pdo-sqlite, pdo-pgsql, pdo-mysql
+      - uses: actions/cache@v4
+        with:
+          path: vendor
+          key: vendor-${{ hashFiles('composer.json') }}
+      - run: composer install
       - name: Set up database
         run: |
           if [[ "${{ matrix.database }}" == "pgsql" ]]; then
@@ -66,11 +66,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
       - uses: actions/cache@v4
         with:
           path: vendor
           key: vendor-${{ hashFiles('composer.json') }}
-      - uses: php-actions/composer@v6
+      - run: composer install
       - run: composer analyse-ci
 
   format:
@@ -78,11 +81,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
       - uses: actions/cache@v4
         with:
           path: vendor
           key: vendor-${{ hashFiles('composer.json') }}
-      - uses: php-actions/composer@v6
+      - run: composer install
       - run: composer format && git diff --exit-code
 
   tests-windows:
@@ -95,19 +101,16 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: vendor
-          key: vendor-${{ hashFiles('composer.json') }}
-      - uses: php-actions/composer@v6
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: pcov
           extensions: mbstring, pdo-sqlite
-      - name: Set up database
-        run: |
-          sqlite3 --version
+      - uses: actions/cache@v4
+        with:
+          path: vendor
+          key: vendor-${{ hashFiles('composer.json') }}
+      - run: composer install
       - name: Run test suite
         run: |
           $env:DSN="sqlite::memory:"
