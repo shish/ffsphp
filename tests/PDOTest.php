@@ -19,8 +19,18 @@ class PDOTest extends TestCase
         $this->dsn = getenv('DSN') ?: "sqlite:test.sqlite";
     }
 
+    public function testBadDriver(): void
+    {
+        $this->expectException(\PDOException::class);
+        new PDO("nonexistentdriver:dbname=testdb");
+    }
+
     public function testConstructor(): PDO
     {
+        $driver = explode(":", $this->dsn, 2)[0];
+        if (!in_array($driver, \PDO::getAvailableDrivers(), true)) {
+            $this->markTestSkipped("PDO driver not available: $driver");
+        }
         $db = new PDO($this->dsn);
         $this->assertEquals($db->getAttribute(\PDO::ATTR_ERRMODE), \PDO::ERRMODE_EXCEPTION);
         return $db;
