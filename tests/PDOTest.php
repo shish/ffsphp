@@ -27,6 +27,10 @@ class PDOTest extends TestCase
 
     public function testConstructor(): PDO
     {
+        $driver = explode(":", $this->dsn, 2)[0];
+        if (!in_array($driver, \PDO::getAvailableDrivers(), true)) {
+            $this->markTestSkipped("PDO driver not available: $driver");
+        }
         $db = new PDO($this->dsn);
         $this->assertEquals($db->getAttribute(\PDO::ATTR_ERRMODE), \PDO::ERRMODE_EXCEPTION);
         return $db;
