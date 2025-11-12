@@ -23,6 +23,9 @@ class PathsTest extends TestCase
     public function test_abspath_windows(): void
     {
         $this->assertEquals("C:/foo/bar", Paths::abspath("C:/foo/bar", cwd: "C:/foo"));
+        $this->assertEquals("C:/foo/bar", Paths::abspath("C:\\foo\\bar", cwd: "C:/foo"));
+        $this->assertEquals("C:/foo/bar", Paths::abspath("C:/foo/bar", cwd: "C:\\foo"));
+        $this->assertEquals("C:/foo/bar", Paths::abspath("C:\\foo\\bar", cwd: "C:\\foo"));
         $this->assertEquals("C:/foo/bar", Paths::abspath("bar", cwd: "C:/foo"));
         $this->assertEquals("C:/foo/bar", Paths::abspath("./bar", cwd: "C:/foo"));
         $this->assertEquals("C:/bar", Paths::abspath("../bar", cwd: "C:/foo"));
