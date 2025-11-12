@@ -6,15 +6,23 @@ namespace FFSPHP;
 
 class Paths
 {
+    public static function normalize_separators(string $path): string
+    {
+        return str_replace("\\", "/", $path);
+    }
+
     public static function is_absolute(string $path): bool
     {
         // Check if the path starts with a slash (Unix-like systems)
         // or a drive letter followed by a colon and a slash (Windows)
+        $path = self::normalize_separators($path);
         return $path !== "" && ($path[0] === '/' || (preg_match('/^[a-zA-Z]:\//', $path) === 1));
     }
 
     public static function abspath(string $path, ?string $cwd = null): string
     {
+        $path = self::normalize_separators($path);
+
         $cwd = $cwd ?? getcwd();
         if ($cwd === false) {
             throw new \RuntimeException("Current working directory could not be determined.");
@@ -22,6 +30,7 @@ class Paths
         if (!self::is_absolute($cwd)) {
             throw new \InvalidArgumentException("Current working directory ($cwd) must be an absolute path.");
         }
+        $cwd = self::normalize_separators($cwd);
 
         if (!self::is_absolute($path)) {
             $path = "$cwd/$path";
