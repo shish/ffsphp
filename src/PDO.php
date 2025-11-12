@@ -16,6 +16,11 @@ class PDO extends \PDO
      */
     public function __construct(string $dsn, ?array $options = null)
     {
+        $driver = explode(":", $dsn, 2)[0];
+        if (!in_array($driver, \PDO::getAvailableDrivers(), true)) {
+            throw new \PDOException("PDO driver not available: $driver (available drivers: " . implode(", ", \PDO::getAvailableDrivers()) . ")");
+        }
+
         $user = null;
         $pass = null;
         if (preg_match("/user=([^;]*)/", $dsn, $matches)) {
