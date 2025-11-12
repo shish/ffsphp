@@ -15,22 +15,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: ["ubuntu-24.04"]
         php: ["8.2", "8.3", "8.4"]
         database: ["pgsql", "mysql", "sqlite"]
-    runs-on: ubuntu-24.04
+        include:
+          - os: "windows-2025"
+            php: 8.4
+            database: sqlite
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
           path: vendor
           key: vendor-${{ hashFiles('composer.json') }}
-      - uses: php-actions/composer@v6
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: pcov
           extensions: mbstring, pdo-sqlite, pdo-pgsql, pdo-mysql
       - name: Set up database
+        if: runner.os == 'Linux'
         run: |
           if [[ "${{ matrix.database }}" == "pgsql" ]]; then
               sudo systemctl start postgresql ;
@@ -49,6 +54,7 @@ jobs:
               sqlite3 --version ;
           fi
       - name: Run test suite
+        if: runner.os == 'Linux'
         run: |
           if [[ "${{ matrix.database }}" == "pgsql" ]]; then
               export DSN="pgsql:user=root;password=root;host=127.0.0.1;dbname=test"
@@ -60,6 +66,13 @@ jobs:
               export DSN="sqlite::memory:"
           fi
           composer test
+      - name: Run test suite
+        if: runner.os == 'Windows'
+        run: |
+          if ($env:DATABASE -eq "sqlite") {
+              $env:DSN = "sqlite::memory:"
+          }
+          composer test
 
   static:
     name: Static Analysis
@@ -70,7 +83,7 @@ jobs:
         with:
           path: vendor
           key: vendor-${{ hashFiles('composer.json') }}
-      - uses: php-actions/composer@v6
+      - uses: shivammathur/setup-php@v2
       - run: composer analyse-ci
 
   format:
@@ -82,5 +95,5 @@ jobs:
         with:
           path: vendor
           key: vendor-${{ hashFiles('composer.json') }}
-      - uses: php-actions/composer@v6
+      - uses: shivammathur/setup-php@v2
       - run: composer format && git diff --exit-code
