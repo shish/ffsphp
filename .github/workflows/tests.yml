@@ -16,24 +16,24 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-24.04"]
-        php: ["8.2", "8.3", "8.4", "8.5"]
+        php: ["8.4", "8.5"]
         database: ["pgsql", "mysql", "sqlite"]
         include:
           - os: "windows-2025"
-            php: 8.3
+            php: 8.4
             database: sqlite
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: vendor
-          key: vendor-${{ hashFiles('composer.json') }}
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           coverage: pcov
           extensions: mbstring, pdo-sqlite, pdo-pgsql, pdo-mysql
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: vendor
+          key: vendor-${{ hashFiles('composer.json') }}
       - run: composer install
       - name: Set up database
         if: runner.os == 'Linux'
@@ -79,8 +79,11 @@ jobs:
     name: Static Analysis
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
         with:
           path: vendor
           key: vendor-${{ hashFiles('composer.json') }}
@@ -92,8 +95,11 @@ jobs:
     name: Formatting
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
         with:
           path: vendor
           key: vendor-${{ hashFiles('composer.json') }}
