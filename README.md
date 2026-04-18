@@ -25,6 +25,12 @@ var_dump($db->execute("SELECT * FROM mytable LIMIT :limit", ["limit"=>3])->fetch
 - Made `PDOStatement::execute($parameters)` use typed bindings, so that
   `"LIMIT :foo", ["foo"=>3]` is rendered as `LIMIT 3` instead of `LIMIT '3'`
 
+- Add `PDO::getTableNames()`, which returns an array of table names in the
+  current database. This is implemented for Postgres, SQLite, and MySQL backends.
+
+- Add `PDO::describe($table)`, which returns an array of column descriptions
+  for the given table. This is implemented for Postgres, SQLite, and MySQL backends.
+
 **Paths**:
 
 ```
