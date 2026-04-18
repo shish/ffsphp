@@ -54,6 +54,19 @@ class PDO extends \PDO
     }
 
     /**
+     * @return string[]
+     */
+    private function getTableNamesSqlite(): array
+    {
+        $tables = [];
+        $stmt = $this->execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+        foreach ($stmt->fetchAll() as $row) {
+            $tables[] = (string)$row['name'];
+        }
+        return $tables;
+    }
+
+    /**
      * @return array<string, array<string, mixed>>
      */
     private function describeSqlite(string $table): array
@@ -70,6 +83,19 @@ class PDO extends \PDO
             ];
         }
         return $cols;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTableNamesMysql(): array
+    {
+        $tables = [];
+        $stmt = $this->execute("SHOW TABLES");
+        foreach ($stmt->fetchAll() as $row) {
+            $tables[] = (string)array_values($row)[0];
+        }
+        return $tables;
     }
 
     /**
@@ -96,6 +122,19 @@ class PDO extends \PDO
     }
 
     /**
+     * @return string[]
+     */
+    private function getTableNamesPgsql(): array
+    {
+        $tables = [];
+        $stmt = $this->execute("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public'");
+        foreach ($stmt->fetchAll() as $row) {
+            $tables[] = (string)$row['tablename'];
+        }
+        return $tables;
+    }
+
+    /**
      * @return array<string, array<string, mixed>>
      */
     private function describePgsql(string $table): array
@@ -118,6 +157,23 @@ class PDO extends \PDO
             ];
         }
         return $cols;
+    }
+
+    /**
+     * Returns a list of all tables in the database
+     *
+     * @return string[]
+     */
+    public function getTableNames(): array
+    {
+        /** @var string $driver */
+        $driver = $this->getAttribute(PDO::ATTR_DRIVER_NAME);
+        return match ($driver) {
+            'sqlite' => $this->getTableNamesSqlite(),
+            'mysql' => $this->getTableNamesMysql(),
+            'pgsql' => $this->getTableNamesPgsql(),
+            default => throw new \Exception("Unsupported driver: $driver"),
+        };
     }
 
     /**

@@ -212,4 +212,12 @@ class PDOTest extends TestCase
         );
     }
 
+    #[Depends("testBaseData")]
+    public function testGetTableNames(PDO $db): void
+    {
+        $tables = $db->getTableNames();
+        $this->assertContains("test", $tables);
+        $this->assertContains("bools", $tables);
+        $this->assertGreaterThanOrEqual(2, count($tables));
+    }
 }
