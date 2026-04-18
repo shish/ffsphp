@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace FFSPHP;
 
+/**
+ * @phpstan-import-type BindableValue from PDOStatement
+ * @phpstan-import-type BindableParam from PDOStatement
+ */
 class PDO extends \PDO
 {
     /**
@@ -37,13 +41,52 @@ class PDO extends \PDO
     }
 
     /**
+     * Expand array placeholders in SQL statement
+     *
+     * @param array<string,BindableParam> $parameters
+     * @return array{string, array<string,BindableValue>} [expanded SQL, flattened parameters]
+     */
+    private function expandArrayPlaceholders(string $sql, array $parameters): array
+    {
+        $flattened = [];
+        foreach ($parameters as $name => $value) {
+            if (is_array($value)) {
+                // Expand :name in SQL to (:name_0, :name_1, :name_2) etc.
+                // Always use numeric indices to prevent SQL injection via associative keys
+                $placeholders = [];
+                foreach (array_values($value) as $index => $item) {
+                    $placeholders[] = ":{$name}_{$index}";
+                    $flattened["{$name}_{$index}"] = $item;
+                }
+                $placeholderList = '(' . implode(', ', $placeholders) . ')';
+
+                $sql = preg_replace('/(:' . preg_quote($name, '/') . ')(?!\w)/', $placeholderList, $sql);
+                if (!$sql) {
+                    throw new \Exception("Failed to expand array placeholder: $name");
+                }
+            } else {
+                $flattened[$name] = $value;
+            }
+        }
+        return [$sql, $flattened];
+    }
+
+    /**
      * Like exec() except it also accepts parameters, saving the user from
      * needing to create a prepared statement for a one-off query
      *
-     * @param mixed[]|null $parameters
+     * Arrays are expanded in SQL using numeric indices:
+     * "WHERE id IN :ids" with ["ids" => [1, 2, 3]] becomes "WHERE id IN (:ids_0, :ids_1, :ids_2)"
+     * Note: Associative arrays are converted to numeric indices for security
+     *
+     * @param array<string,BindableParam>|null $parameters
      */
     public function execute(string $query, ?array $parameters = null): PDOStatement
     {
+        if ($parameters) {
+            [$query, $parameters] = $this->expandArrayPlaceholders($query, $parameters);
+        }
+
         /** @var PDOStatement|false */
         $stmt = $this->prepare($query);
         if (!$stmt) {

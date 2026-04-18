@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace FFSPHP;
 
+/**
+ * @phpstan-type BindableValue bool|int|string|\Stringable|null
+ * @phpstan-type BindableParam BindableValue|array<BindableValue>
+ */
 class PDOStatement extends \PDOStatement
 {
     protected PDO|null $PDO = null;
@@ -18,7 +22,9 @@ class PDOStatement extends \PDOStatement
      * as integers, so "LIMIT :foo" [foo=3] turns into "LIMIT 3"
      * instead of "LIMIT '3'"
      *
-     * @param mixed[]|null $input_parameters
+     * Note: Array expansion is handled in PDO::execute() before the statement is prepared
+     *
+     * @param array<string,BindableParam>|null $input_parameters
      */
     public function execute(?array $input_parameters = null): bool
     {
@@ -28,8 +34,8 @@ class PDOStatement extends \PDOStatement
                     $this->bindValue(':'.$name, $value, PDO::PARAM_BOOL);
                 } elseif (is_int($value)) {
                     $this->bindValue(':'.$name, $value, PDO::PARAM_INT);
-                } elseif (is_array($value)) {
-                    throw new \PDOException("Arrays are not supported as bind values (Trying to bind $name)");
+                } elseif (is_null($value)) {
+                    $this->bindValue(':'.$name, $value, PDO::PARAM_NULL);
                 } else {
                     $this->bindValue(':'.$name, $value, PDO::PARAM_STR);
                 }

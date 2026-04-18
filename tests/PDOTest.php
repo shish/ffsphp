@@ -124,13 +124,34 @@ class PDOTest extends TestCase
     #[Depends("testBaseData")]
     public function testBindingArray(PDO $db): void
     {
-        $this->expectException(\PDOException::class);
         $res = $db->execute(
-            "SELECT * FROM test WHERE textval IN (:arrayval)",
+            "SELECT * FROM test WHERE textval IN :arrayval",
             ["arrayval" => ["hello", "world"]]
         )->fetchAll();
-        //$this->assertCount(2, $res);
-        //$this->assertEquals(1, $res[0]['id']);
+        $this->assertCount(2, $res);
+        $this->assertEquals(1, $res[0]['id']);
+    }
+
+    #[Depends("testBaseData")]
+    public function testBindingArray_named(PDO $db): void
+    {
+        $res = $db->execute(
+            "SELECT * FROM test WHERE textval IN :arrayval",
+            ["arrayval" => ["a" => "hello", "b" => "world"]]
+        )->fetchAll();
+        $this->assertCount(2, $res);
+        $this->assertEquals(1, $res[0]['id']);
+    }
+
+    #[Depends("testBaseData")]
+    public function testBindingArray_mixed(PDO $db): void
+    {
+        $res = $db->execute(
+            "SELECT * FROM test WHERE textval IN :arrayval",
+            ["arrayval" => ["hello", 42]]
+        )->fetchAll();
+        $this->assertCount(1, $res);
+        $this->assertEquals(1, $res[0]['id']);
     }
 
     /**
