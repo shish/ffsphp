@@ -10,7 +10,7 @@ Features
 **PDO**:
 
 Example use:
-```
+```php
 use \FFSPHP\PDO;
 $db = new PDO($dsn, $driver_options);
 var_dump($db->execute("SELECT * FROM mytable LIMIT :limit", ["limit"=>3])->fetchAll());
@@ -33,7 +33,7 @@ var_dump($db->execute("SELECT * FROM mytable LIMIT :limit", ["limit"=>3])->fetch
 
 **Paths**:
 
-```
+```php
 use \FFSPHP\Paths;
 
 Paths::abspath("./foo");  # /my/dir/foo
@@ -42,7 +42,7 @@ Paths::relative_path("out/output.txt", "my/dir/input.txt");  # ../../out/output.
 
 **VLQ**:
 
-```
+```php
 use \FFSPHP\VLQ;
 
 VLQ::decode_vlq_array("IAAM");  # [4,0,0,6]
