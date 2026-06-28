@@ -5,6 +5,7 @@ coverage/
 *.clover
 *.cache
 *.sqlite
+.phpactor.json
 
 # libraries generally don't want lock files
 composer.lock
