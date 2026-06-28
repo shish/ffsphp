@@ -210,7 +210,7 @@ class PDO extends \PDO
     public function getTableNames(): array
     {
         /** @var string $driver */
-        $driver = $this->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $driver = $this->getAttribute(\PDO::ATTR_DRIVER_NAME);
         return match ($driver) {
             'sqlite' => $this->getTableNamesSqlite(),
             'mysql' => $this->getTableNamesMysql(),
@@ -227,7 +227,7 @@ class PDO extends \PDO
     public function describe(string $table): array
     {
         /** @var string $driver */
-        $driver = $this->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $driver = $this->getAttribute(\PDO::ATTR_DRIVER_NAME);
         return match ($driver) {
             'sqlite' => $this->describeSqlite($table),
             'mysql' => $this->describeMysql($table),

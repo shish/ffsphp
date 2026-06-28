@@ -31,13 +31,13 @@ class PDOStatement extends \PDOStatement
         if ($input_parameters) {
             foreach ($input_parameters as $name => $value) {
                 if (is_bool($value)) {
-                    $this->bindValue(':'.$name, $value, PDO::PARAM_BOOL);
+                    $this->bindValue(':'.$name, $value, \PDO::PARAM_BOOL);
                 } elseif (is_int($value)) {
-                    $this->bindValue(':'.$name, $value, PDO::PARAM_INT);
+                    $this->bindValue(':'.$name, $value, \PDO::PARAM_INT);
                 } elseif (is_null($value)) {
-                    $this->bindValue(':'.$name, $value, PDO::PARAM_NULL);
+                    $this->bindValue(':'.$name, $value, \PDO::PARAM_NULL);
                 } else {
-                    $this->bindValue(':'.$name, $value, PDO::PARAM_STR);
+                    $this->bindValue(':'.$name, $value, \PDO::PARAM_STR);
                 }
             }
         }
