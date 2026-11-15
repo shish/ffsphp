@@ -115,6 +115,9 @@ class PDO extends \PDO
     private function describeSqlite(string $table): array
     {
         $cols = [];
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            throw new \Exception("Invalid table name: $table");
+        }
         $stmt = $this->execute("PRAGMA table_info($table)");
         foreach ($stmt->fetchAll() as $col) {
             $cols[(string)$col['name']] = [
@@ -147,6 +150,9 @@ class PDO extends \PDO
     private function describeMysql(string $table): array
     {
         $cols = [];
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            throw new \Exception("Invalid table name: $table");
+        }
         $stmt = $this->execute("DESCRIBE $table");
         foreach ($stmt->fetchAll() as $col) {
             $type = strtoupper($col['Type']);
